@@ -21,7 +21,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: nlnetlabs/routinator
+          images: ${{ secrets.DOCKER_HUB_ID }}/routinator
           flavor: |
             latest=false
           tags: |
