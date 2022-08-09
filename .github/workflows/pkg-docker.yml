@@ -49,38 +49,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          platforms: linux/amd64, linux/arm/v7
-          push: false
-          load: true
-          tags: nlnetlabs/routinator:sanitycheck
-
-      # Do a basic sanity check of the created image using the test tag to select the image to run.
-      - name: Sanity check
-        run: |
-          docker run --rm nlnetlabs/routinator:sanitycheck --version
-
-      # Push the image and tags to Docker Hub.
-      # The build uses the cached build outputs from the step above so we don't have to wait for the build again.
-      #
-      # On push of a tag to refs/tags/v1.2.3 the Docker tags will be 'v1.2.3' and 'latest' because of:
-      #   type=semver,pattern={{version}},prefix=v
-      #   type=raw,value=latest,enable=${{ github.ref != 'refs/heads/main' && !contains(github.ref, '-') }}
-      #                                    ^^^^^^^^^^^^^ true, not main       ^^^^^^^^^ true, no dash found
-      #
-      #   Note: we don't use semver,pattern={{raw}} because while that preserves the leading v in v1.2.3 it
-      #   discards the leading v in v1.2.3-rc4.
-      #
-      # On push of a tag to refs/tags/v1.2.3-rc1 the Docker tags will be 'v1.2.3' but NOT 'latest' because of:
-      #   type=semver,pattern={{raw}}
-      #   type=raw,value=latest,enable=${{ github.ref != 'refs/heads/main' && !contains(github.ref, '-') }}
-      #                                    ^^^^^^^^^^^^^ true, not main       ^^^^^^^^^ false, dash found
-      #
-      # On push to refs/heads/main the Docker tag will be 'unstable' because of:
-      #   type=raw,value=unstable,enable=${{ github.ref == 'refs/heads/main' }}
-      - name: Push built Docker image to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          platforms: linux/amd64, linux/arm/v7
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
